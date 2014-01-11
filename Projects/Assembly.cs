@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("2Toad, LLC.")]
 [assembly: AssemblyProduct("Rijndael256")]
-[assembly: AssemblyDescription("Rijndael AES-256 encryption.")]
+[assembly: AssemblyDescription("Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key cipher Rijndael.")]
 [assembly: AssemblyCopyright("Copyright ©2013 2Toad, LLC.")]
 [assembly: AssemblyTrademark("2Toad")]
 [assembly: AssemblyCulture("")]
