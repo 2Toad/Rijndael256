@@ -1,0 +1,21 @@
+# use glob syntax
+syntax: glob
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# User
+*.suo
+*.user
+*.sln.docstates
+[Pp]ackages/
+.sass-cache/
+
+# Binaries
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+*.nupkg
