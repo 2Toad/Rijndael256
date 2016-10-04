@@ -7,7 +7,7 @@
   "copyright": "Copyright (C)2013 2Toad, LLC. All rights reserved.",
   "packOptions": {
     "owners": [ "2Toad, LLC" ],
-    "licenseUrl": "https://github.com/2Toad/Rijndael256/LICENSE",
+    "licenseUrl": "https://github.com/2Toad/Rijndael256/blob/master/LICENSE",
     "projectUrl": "https://github.com/2Toad/Rijndael256",
     "tags": [
       "2Toad",
