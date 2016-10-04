@@ -18,21 +18,8 @@ namespace Rijndael256
     /// </summary>
     public static class Rijndael
     {
-        #region Properties
-
-        const int InitializationVectorSize = 16;
-        const CipherMode BlockCipherMode = CipherMode.CBC;
-        
-        /// <summary>
-        /// A cryptographically strong random number generator.
-        /// </summary>
-        public static RNGCryptoServiceProvider RandomNumberGenerator
-        {
-            get { return _randomNumberGenerator ?? (_randomNumberGenerator = new RNGCryptoServiceProvider()); }
-        }
-        private static RNGCryptoServiceProvider _randomNumberGenerator;
-
-        #endregion
+        private const int InitializationVectorSize = 16;
+        private const CipherMode BlockCipherMode = CipherMode.CBC;        
 
         /// <summary>
         /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
@@ -60,7 +47,7 @@ namespace Rijndael256
         public static string Encrypt(byte[] data, string password, KeySize keySize)
         {
             // Generate a random IV
-            var iv = GenerateRandomBytes(InitializationVectorSize);
+            var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
 
             // Encrypt the data
             var cipher = Encrypt(data, password, iv, keySize);
@@ -84,7 +71,7 @@ namespace Rijndael256
         /// <returns>The encrypted data.</returns>
         public static byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
         {
-            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException("iv", "AES requires an Initialization Vector of 128-bits.");
+            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException(nameof(iv), "AES requires an Initialization Vector of 128-bits.");
 
             using (var ms = new MemoryStream())
             {
@@ -114,7 +101,7 @@ namespace Rijndael256
             using (var fso = new FileStream(outFile, FileMode.Create, FileAccess.Write))
             {
                 // Store the IV at the beginning of the encrypted file
-                var iv = GenerateRandomBytes(InitializationVectorSize);
+                var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
                 fso.Write(iv, 0, iv.Length);
 
                 // Create a CryptoStream to process the data
@@ -254,19 +241,6 @@ namespace Rijndael256
         #region Private Methods
 
         /// <summary>
-        /// Generates an array of bytes using a cryptographically strong sequence
-        /// of random values.
-        /// </summary>
-        /// <param name="size">The size of the array.</param>
-        /// <returns>The array of bytes.</returns>
-        private static byte[] GenerateRandomBytes(int size)
-        {
-            var bytes = new byte[size];
-            RandomNumberGenerator.GetBytes(bytes);
-            return bytes;
-        }
-
-        /// <summary>
         /// Generates a cryptographic key from the specified password.
         /// </summary>
         /// <param name="password">The password.</param>
@@ -290,10 +264,15 @@ namespace Rijndael256
         /// <returns>The symmetric encryptor.</returns>
         private static ICryptoTransform CreateEncryptor(string password, byte[] iv, KeySize keySize)
         {
+#if NET45
             var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
+#elif NETSTANDARD1_6
+            var rijndael = Aes.Create();
+            rijndael.Mode = BlockCipherMode;
+#endif
             return rijndael.CreateEncryptor(GenerateKey(password, keySize), iv);
         }
-        
+
         /// <summary>
         /// Creates a symmetric Rijndael decryptor.
         /// </summary>
@@ -303,11 +282,16 @@ namespace Rijndael256
         /// <returns>The symmetric decryptor.</returns>
         private static ICryptoTransform CreateDecryptor(string password, byte[] iv, KeySize keySize)
         {
+#if NET45
             var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
+#elif NETSTANDARD1_6
+            var rijndael = Aes.Create();
+            rijndael.Mode = BlockCipherMode;
+#endif
             return rijndael.CreateDecryptor(GenerateKey(password, keySize), iv);
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>

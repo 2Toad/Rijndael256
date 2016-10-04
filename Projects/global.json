@@ -1,0 +1,6 @@
+{
+  "projects": [
+    "Rijndael256",
+    "Rijndael256.Tests" 
+  ]
+}

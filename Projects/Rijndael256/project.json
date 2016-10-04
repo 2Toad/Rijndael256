@@ -1,0 +1,48 @@
+﻿{
+  "title": "Rijndael256",
+  "version": "2.0.0",
+
+  "authors": [ "2Toad, LLC" ],
+  "description": "Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key cipher Rijndael.\n\nFeatures: AES-128, AES-192, AES-256, SHA-512, PBKDF2.",
+  "copyright": "Copyright (C)2013 2Toad, LLC. All rights reserved.",
+  "packOptions": {
+    "owners": [ "2Toad, LLC" ],
+    "licenseUrl": "https://github.com/2Toad/Rijndael256/LICENSE",
+    "projectUrl": "https://github.com/2Toad/Rijndael256",
+    "tags": [
+      "2Toad",
+      "Rijndael256",
+      "Security",
+      "Cryptography",
+      "Cryptographic",
+      "Encryption",
+      "Decryption",
+      "Rijndael",
+      "AES",
+      "AES-128",
+      "AES-192",
+      "AES-256",
+      "SHA",
+      "SHA-512",
+      "PBKDF2",
+      "Hashing"
+    ]
+  },
+
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Collections.Concurrent": {
+          "type": "build"
+        }
+      }
+    },
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "NETStandard.Library": "1.6.0",
+        "System.Security.Cryptography.Algorithms": "4.2.0"
+      }
+    }
+  }
+}

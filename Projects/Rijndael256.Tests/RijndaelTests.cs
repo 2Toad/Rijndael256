@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * Rijndael256
+ * Copyright (C)2013 2Toad, LLC.
+ * licensing@2toad.com
+ * 
+ * http://2toad.com/Project/Rijndael256/License
+ */
+
+using System;
 using System.Text;
 using NUnit.Framework;
 

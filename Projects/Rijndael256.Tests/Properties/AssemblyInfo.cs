@@ -9,15 +9,20 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following 
+// General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Rijndael256.Tests")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("2Toad, LLC")]
+[assembly: AssemblyProduct("Rijndael256")]
+[assembly: AssemblyDescription("Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key cipher Rijndael.")]
+[assembly: AssemblyCopyright("Copyright ©2013 2Toad, LLC.")]
+[assembly: AssemblyTrademark("2Toad")]
 
-// Setting ComVisible to false makes the types in this assembly not visible 
-// to COM components.  If you need to access a type in this assembly from 
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("9fe44f7b-5e6c-42ce-843e-3d99dedbd2a2")]
+[assembly: Guid("7ed47c9c-b0f9-4182-ba86-2f0701320fd8")]
