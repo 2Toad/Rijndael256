@@ -7,7 +7,7 @@
  */
 
 using System;
-using NUnit.Framework;
+using Xunit;
 
 namespace Rijndael256.Tests
 {
@@ -19,17 +19,17 @@ namespace Rijndael256.Tests
 
         #endregion
 
-        [Test]
+        [Fact]
         public void Sha512()
         {
             const string proof = "5670CA06284E9328D363CD7F6986374D22806F21A106DE5EDFE5D5667B577B33D69024A1E13E468B44A9C4EE5542AB9" +
                 "BC4D19BCF083BE1270D2E66A989105429";
 
             var hash = Hash.Sha512(Data);
-            Assert.AreEqual(hash, proof);
+            Assert.Equal(hash, proof);
         }
 
-        [Test]
+        [Fact]
         public void Pbkdf2()
         {
             const string salt = "0A9FDB669FA44FF1BEC484A1BE6B6E2A";
@@ -39,9 +39,9 @@ namespace Rijndael256.Tests
             var hash100 = Hash.Pbkdf2(Data, salt, 100);
             var hash1000 = Hash.Pbkdf2(Data, salt, 1000);
 
-            Assert.AreEqual(Convert.ToBase64String(hash100), proof100);
-            Assert.AreEqual(Convert.ToBase64String(hash1000), proof1000);
-            Assert.AreNotEqual(Convert.ToBase64String(hash100), Convert.ToBase64String(hash1000));
+            Assert.Equal(Convert.ToBase64String(hash100), proof100);
+            Assert.Equal(Convert.ToBase64String(hash1000), proof1000);
+            Assert.NotEqual(Convert.ToBase64String(hash100), Convert.ToBase64String(hash1000));
         }
     }
 }
