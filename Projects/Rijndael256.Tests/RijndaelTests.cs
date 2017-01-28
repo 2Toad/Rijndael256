@@ -20,9 +20,9 @@ namespace Rijndael256.Tests
         static readonly byte[] InitializationVector = Encoding.UTF8.GetBytes("D6BB4C14C3BF491F");
         const string Data = "8D17099FE0D44173BA0F66653DA7D48B";
 
-        const string Cipher128 = "laxV572ARLFKlHHHCoW3KQM/gkildCBh7MGWncyAyfnOeFOqgnzLNysQWnDzGD6g";
-        const string Cipher192 = "st8+AbnWhPRvlD+InbRmd0JZhcN7+LJMOciMi78eytvCcKk3PS8BiVhd2exK4QuM";
-        const string Cipher256 = "NaiGDMg4vdWt7xOcCVGcoBGsX2HcbSOqnypn51xmYj8XqZduvJ++bD6bwwVuN6ih";
+        const string Cipher128 = "jpbR3MrsIVIjXeBLF3+3vNyZ/xyBeJAH3JzX1FOYaXDxQcf96YOyEy1imKqXgc9w";
+        const string Cipher192 = "87hQWJoPGdMrwz1qBcQi6cn6xw6xWWz+rjDlTkRzQYatKW7xR91OExJKSR+yA2+c";
+        const string Cipher256 = "5s+yLHArUeal29ZZ/QZ6+7Z7qxoibIp6nzrLaE6T5MYYCPlFyGThsh+41beL1p+j";
 
         #endregion
 
