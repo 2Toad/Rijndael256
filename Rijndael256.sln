@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26127.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rijndael256", "Rijndael256\Rijndael256.csproj", "{9CC1F01F-D150-4F1A-A1B2-C1CB02EACB18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rijndael256", "Rijndael256\Rijndael256.csproj", "{9CC1F01F-D150-4F1A-A1B2-C1CB02EACB18}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rijndael256.Tests", "Rijndael256.Tests\Rijndael256.Tests.csproj", "{2492F930-B153-4B95-9129-5E8CAF44B4DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rijndael256.Tests", "Rijndael256.Tests\Rijndael256.Tests.csproj", "{2492F930-B153-4B95-9129-5E8CAF44B4DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A5CDE51A-DBA4-4817-937B-C5A4C9EBA86C}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
