@@ -12,7 +12,7 @@ Features: AES-128, AES-192, AES-256, Authenticated AES, Encrypt then MAC (EtM), 
     <PackageProjectUrl>https://github.com/2Toad/Rijndael256</PackageProjectUrl>
     <RepositoryUrl>https://github.com/2Toad/Rijndael256</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>2Toad Rijndael256 Security Cryptography Cryptographic Encryption Decryption Rijndael AES AES-128 AES-192 AES-256 "Authenticated AES" "Encrypt then MAC" EtM SHA SHA-512 PBKDF2 Hashing</PackageTags>
+    <PackageTags>2Toad Rijndael256 Security Cryptography Cryptographic Encryption Decryption Rijndael AES AES-128 AES-192 AES-256 Authenticated Encrypt-then-MAC EtM SHA SHA-512 PBKDF2 Hashing</PackageTags>
     <AssemblyVersion>3.1.0.0</AssemblyVersion>
     <FileVersion>3.1.0.0</FileVersion>
   </PropertyGroup>
