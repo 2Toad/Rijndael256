@@ -10,6 +10,9 @@ using System.Text;
 
 namespace Rijndael256
 {
+    /// <summary>
+    /// Used for Authenticated AES.
+    /// </summary>
     public class AuthKeys
     {
         // The generated hash is 512-bit (128 chars)
@@ -19,6 +22,12 @@ namespace Rijndael256
         public string CipherKey { get; set; }
         public byte[] MacKey { get; set; }
 
+        /// <summary>
+        /// Generates a SHA-512 hash from the provided password, and derives two
+        /// 256-bit keys from the hash.
+        /// </summary>
+        /// <param name="password">The password to hash.</param>
+        /// <returns>A pair of 256-bit keys.</returns>
         public static AuthKeys Generate(string password)
         {
             // Generate 512-bit hash from password
