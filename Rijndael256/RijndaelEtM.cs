@@ -14,9 +14,10 @@ using System.Text;
 namespace Rijndael256
 {
     /// <summary>
-    /// Authenticated implementation of the Rijndael symmetric-key cipher.
+    /// Authenticated implementation of the Rijndael symmetric-key cipher using
+    /// the Encrypt then MAC (EtM) strategy.
     /// </summary>
-    public class RijndaelAuth : RijndaelBase
+    public class RijndaelEtM : RijndaelBase
     {
         /// <summary>
         /// Encrypts data using the "Encrypt then MAC" (EtM) strategy via the Rijndael cipher in CBC 
