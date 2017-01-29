@@ -3,7 +3,7 @@
  * Copyright (C)2013 2Toad, LLC.
  * licensing@2toad.com
  * 
- * http://2toad.com/Project/Rijndael256/License
+ * https://github.com/2Toad/Rijndael256
  */
 
 using System;
@@ -264,9 +264,9 @@ namespace Rijndael256
         /// <returns>The symmetric encryptor.</returns>
         private static ICryptoTransform CreateEncryptor(string password, byte[] iv, KeySize keySize)
         {
-#if NET451
+#if NET452
             var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
-#elif NETSTANDARD1_6
+#else
             var rijndael = Aes.Create();
             rijndael.Mode = BlockCipherMode;
 #endif
@@ -282,9 +282,9 @@ namespace Rijndael256
         /// <returns>The symmetric decryptor.</returns>
         private static ICryptoTransform CreateDecryptor(string password, byte[] iv, KeySize keySize)
         {
-#if NET451
+#if NET452
             var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
-#elif NETSTANDARD1_6
+#else
             var rijndael = Aes.Create();
             rijndael.Mode = BlockCipherMode;
 #endif

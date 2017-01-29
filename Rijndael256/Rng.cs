@@ -3,7 +3,7 @@
  * Copyright (C)2013 2Toad, LLC.
  * licensing@2toad.com
  * 
- * http://2toad.com/Project/Rijndael256/License
+ * https://github.com/2Toad/Rijndael256
  */
 
 using System.Security.Cryptography;
