@@ -19,6 +19,7 @@ Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key 
 		* 192-bit
 		* 256-bit
 	* CBC Mode
+	* Authenticated AES: Encrypt then MAC (EtM)
 * Cryptographic hashes:
 	* SHA-512
 	* PBKDF2
@@ -29,14 +30,27 @@ Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key 
 ### Encrypt a string using Rijndael AES 256-bit
 
 ```C#
-string password = "sKzvYk#1Pn33!YN";    // The password to encrypt the file with
-string clearText = "Top secret data";   // The string to encrypt
+string password = "sKzvYk#1Pn33!YN";  // The password to encrypt the data with
+string clearText = "Top secret data"; // The string to encrypt
 
 // Encrypt the string
 string cipherText = Rijndael.Encrypt(clearText, password, KeySize.Aes256);
 
 // Decrypt the string
 clearText = Rijndael.Decrypt(cipherText, password, KeySize.Aes256);
+```
+
+### Encrypt a string using authenticated Rijndael AES 256-bit (Encrypt then MAC)
+
+```C#
+string password = "Znk7drQ8a8AS3PeHl42b";   // The password to encrypt the data with
+string clearText = "Super top secret data"; // The string to encrypt
+
+// Encrypt the string
+string authenticatedCipherText = RijndaelEtM.Encrypt(clearText, password, KeySize.Aes256);
+
+// Decrypt the string
+clearText = RijndaelEtM.Decrypt(authenticatedCipherText, password, KeySize.Aes256);
 ```
 
 ### Encrypt a file using Rijndael AES 256-bit
