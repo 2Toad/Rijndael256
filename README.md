@@ -25,7 +25,7 @@ Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key 
 	* SHA-512
 	* PBKDF2
 
-## Examples
+## Quick Start
 
 ### Encrypt a string using Rijndael AES 256-bit
 
@@ -43,7 +43,7 @@ plaintext = Rijndael.Decrypt(ciphertext, password, KeySize.Aes256);
 ### Encrypt a string using Authenticated Encryption (EtM)
 
 ```C#
-string password = "KQpcQHuQ66b8z37";  // The password to encrypt the data with
+string password = "KQpc@HuQ66b$z37";  // The password to encrypt the data with
 string plaintext = "Top secret data"; // The string to encrypt
 
 // Encrypt the string
