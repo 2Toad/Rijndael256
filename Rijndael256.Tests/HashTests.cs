@@ -13,11 +13,7 @@ namespace Rijndael256.Tests
 {
     public class HashTests
     {
-        #region Properties
-
         const string Data = "8D17099FE0D44173BA0F66653DA7D48B";
-
-        #endregion
 
         [Fact]
         public void Sha512()
@@ -35,13 +31,15 @@ namespace Rijndael256.Tests
             const string salt = "0A9FDB669FA44FF1BEC484A1BE6B6E2A";
             const string proof100 = "Ae46Q6u3I7Z7MPuX5HbkahHII9jahV4o3NCug6Zt2yYVKWnCAwsokOGlyuIqwiqPqNIeiXxU8yBEO+6QnsobAw==";
             const string proof1000 = "/HpGVn9ti223R5H2c6Rj5EAaU3dEjH37Y9GRjFuOp3OlOAN5V1zI06CDLQqEgFuxjM8jesNM0G/3aQQpR72n7Q==";
+            const string proof10000 = "YejVjtrqDyo5Ip5EeaxFtD3/DHB+DEN0iP7Zwfx6WqX8SugPJg1RSspCopGgm2fqXH5LHQoURZpKECFP5WpCDQ==";
 
             var hash100 = Hash.Pbkdf2(Data, salt, 100);
             var hash1000 = Hash.Pbkdf2(Data, salt, 1000);
+            var hash10000 = Hash.Pbkdf2(Data, salt, 10000);
 
             Assert.Equal(Convert.ToBase64String(hash100), proof100);
             Assert.Equal(Convert.ToBase64String(hash1000), proof1000);
-            Assert.NotEqual(Convert.ToBase64String(hash100), Convert.ToBase64String(hash1000));
+            Assert.Equal(Convert.ToBase64String(hash10000), proof10000);
         }
     }
 }
