@@ -14,17 +14,12 @@ namespace Rijndael256.Tests
 {
     public class RijndaelTests
     {
-        #region Properties
-
-        const string Password = "A95D46AC30D44CFE-A403553D1D0F5D46";
-        static readonly byte[] InitializationVector = Encoding.UTF8.GetBytes("D6BB4C14C3BF491F");
-        const string Data = "8D17099FE0D44173BA0F66653DA7D48B";
-
-        const string Cipher128 = "jpbR3MrsIVIjXeBLF3+3vNyZ/xyBeJAH3JzX1FOYaXDxQcf96YOyEy1imKqXgc9w";
-        const string Cipher192 = "87hQWJoPGdMrwz1qBcQi6cn6xw6xWWz+rjDlTkRzQYatKW7xR91OExJKSR+yA2+c";
-        const string Cipher256 = "5s+yLHArUeal29ZZ/QZ6+7Z7qxoibIp6nzrLaE6T5MYYCPlFyGThsh+41beL1p+j";
-
-        #endregion
+        const string Password = "Cracker Turbine Zebra Austin";
+        static readonly byte[] InitializationVector = Encoding.UTF8.GetBytes("C3BF491FD6BB4C14");
+        const string Data = "This is my AES secret phrase.";
+        const string Cipher128 = "QzNCRjQ5MUZENkJCNEMxNE8f2ohrMW7y1rrLjKBxBU4C+W/n2zR8s6DdAy9GJB2j";
+        const string Cipher192 = "QzNCRjQ5MUZENkJCNEMxNJk6tXT/RLReed064fp29r5OLA6axJVVk7Ux7OYmUAH+";
+        const string Cipher256 = "QzNCRjQ5MUZENkJCNEMxNJ10aYjkvU+/Kkn0iiCK0JLqw4dNqhCNrsU9bo/03vMI";
 
         [Fact]
         public void Encrypt128()
@@ -53,25 +48,22 @@ namespace Rijndael256.Tests
         [Fact]
         public void Decrypt128()
         {
-            var cipher = Convert.FromBase64String(Cipher128);
-            var data = Rijndael.Decrypt(cipher, Password, InitializationVector, KeySize.Aes128);
-            Assert.Equal(Encoding.UTF8.GetString(data), Data);
+            var data = Rijndael.Decrypt(Cipher128, Password, KeySize.Aes128);
+            Assert.Equal(data, Data);
         }
 
         [Fact]
         public void Decrypt192()
         {
-            var cipher = Convert.FromBase64String(Cipher192);
-            var data = Rijndael.Decrypt(cipher, Password, InitializationVector, KeySize.Aes192);
-            Assert.Equal(Encoding.UTF8.GetString(data), Data);
+            var data = Rijndael.Decrypt(Cipher192, Password, KeySize.Aes192);
+            Assert.Equal(data, Data);
         }
 
         [Fact]
         public void Decrypt256()
         {
-            var cipher = Convert.FromBase64String(Cipher256);
-            var data = Rijndael.Decrypt(cipher, Password, InitializationVector, KeySize.Aes256);
-            Assert.Equal(Encoding.UTF8.GetString(data), Data);
+            var data = Rijndael.Decrypt(Cipher256, Password, KeySize.Aes256);
+            Assert.Equal(data, Data);
         }
 
         [Fact]

@@ -16,15 +16,11 @@ namespace Rijndael256
     /// <summary>
     /// AES implementation of the Rijndael symmetric-key cipher.
     /// </summary>
-    public static class Rijndael
+    public class Rijndael : RijndaelBase
     {
-        private const int InitializationVectorSize = 16;
-        private const CipherMode BlockCipherMode = CipherMode.CBC;        
-
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// A random 128-bit Initialization Vector is generated for the cipher, and inserted at the
-        /// beginning of the resulting Base64 encoded string.
+        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
         /// <param name="data">The data to encrypt.</param>
         /// <param name="password">The password to encrypt the data with.</param>
@@ -36,9 +32,8 @@ namespace Rijndael256
         }
 
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// A random 128-bit Initialization Vector is generated for the cipher, and inserted at the
-        /// beginning of the resulting Base64 encoded string.
+        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
         /// <param name="data">The data to encrypt.</param>
         /// <param name="password">The password to encrypt the data with.</param>
@@ -49,47 +44,16 @@ namespace Rijndael256
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
 
-            // Encrypt the data
+            // Encrypt the data (returns IV + Cipher)
             var cipher = Encrypt(data, password, iv, keySize);
 
-            // Store the IV at the beginning of the output
-            var output = new byte[iv.Length + cipher.Length];
-            iv.CopyTo(output, 0);
-            cipher.CopyTo(output, iv.Length);
-
-            // Base64 encode the output
-            return Convert.ToBase64String(output);
+            // Base64 encode the cipher
+            return Convert.ToBase64String(cipher);
         }
 
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
-        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
-        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
-        {
-            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException(nameof(iv), "AES requires an Initialization Vector of 128-bits.");
-
-            using (var ms = new MemoryStream())
-            {
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(ms, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
-                {
-                    // Encrypt the data
-                    cs.Write(data, 0, data.Length);
-                    cs.FlushFinalBlock();
-                }
-                return ms.ToArray();
-            }            
-        }
-
-        /// <summary>
-        /// Encrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// A random 128-bit Initialization Vector is generated for the cipher, and inserted at the
-        /// beginning of the resulting file.
+        /// Encrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
         /// <param name="inFile">The file to encrypt.</param>
         /// <param name="outFile">The new encrypted file.</param>
@@ -130,9 +94,7 @@ namespace Rijndael256
         }
 
         /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// This method expects a Base64 encoded string, with a 128-bit Initiliazation Vector embedded 
-        /// at the beginning of the data.
+        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
         /// <param name="data">The data to decrypt.</param>
         /// <param name="password">The password to decrypt the data with.</param>
@@ -144,64 +106,7 @@ namespace Rijndael256
         }
 
         /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// This method expects a 128-bit Initiliazation Vector embedded at the beginning of the data.
-        /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static string Decrypt(byte[] data, string password, KeySize keySize)
-        {
-            using (var ms = new MemoryStream(data))
-            {
-                // Read the IV from the beginning of the encrypted string
-                var iv = new byte[InitializationVectorSize];
-                ms.Read(iv, 0, iv.Length);
-
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
-                {
-                    // Decrypt data and convert it to a string
-                    using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static byte[] Decrypt(byte[] data, string password, byte[] iv, KeySize keySize)
-        {
-            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException("iv", "AES requires an Initialization Vector of 128-bits.");
-
-            using (var ms = new MemoryStream(data))
-            {
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
-                {
-                    // We don't know what the size of decrypted data will be, so allocate the buffer using
-                    // the encrypted size (encrypted data is always larger then decrypted data)
-                    var buffer = new byte[data.Length];
-
-                    // Decrypt the data
-                    var length = cs.Read(buffer, 0, buffer.Length);
-                    // Remove unused space
-                    Array.Resize(ref buffer, length);
-
-                    return buffer;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Decrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA1 salt.
-        /// This method expects a 128-bit Initiliazation Vector embedded at the beginning of the file.
+        /// Decrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
         /// <param name="inFile">The file to decrypt.</param>
         /// <param name="outFile">The new decrypted file.</param>
@@ -237,79 +142,5 @@ namespace Rijndael256
                 }
             }
         }
-
-        #region Private Methods
-
-        /// <summary>
-        /// Generates a cryptographic key from the specified password.
-        /// </summary>
-        /// <param name="password">The password.</param>
-        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The cryptographic key.</returns>
-        private static byte[] GenerateKey(string password, KeySize keySize)
-        {
-            // Create a salt to help prevent rainbow table attacks
-            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), 10000);
-
-            // Generate a key from the password and salt
-            return Hash.Pbkdf2(password, salt, 10000, (int)keySize / 8);
-        }
-
-        /// <summary>
-        /// Creates a symmetric Rijndael encryptor.
-        /// </summary>
-        /// <param name="password">The password to encrypt the data with.</param>
-        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
-        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The symmetric encryptor.</returns>
-        private static ICryptoTransform CreateEncryptor(string password, byte[] iv, KeySize keySize)
-        {
-#if NET452
-            var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
-#else
-            var rijndael = Aes.Create();
-            rijndael.Mode = BlockCipherMode;
-#endif
-            return rijndael.CreateEncryptor(GenerateKey(password, keySize), iv);
-        }
-
-        /// <summary>
-        /// Creates a symmetric Rijndael decryptor.
-        /// </summary>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
-        /// <param name="keySize">The cipher key size.</param>
-        /// <returns>The symmetric decryptor.</returns>
-        private static ICryptoTransform CreateDecryptor(string password, byte[] iv, KeySize keySize)
-        {
-#if NET452
-            var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
-#else
-            var rijndael = Aes.Create();
-            rijndael.Mode = BlockCipherMode;
-#endif
-            return rijndael.CreateDecryptor(GenerateKey(password, keySize), iv);
-        }
-
-#endregion
-    }
-
-    /// <summary>
-    /// AES approved cipher key sizes.
-    /// </summary>
-    public enum KeySize
-    {
-        /// <summary>
-        /// 128-bit
-        /// </summary>
-        Aes128 = 128,
-        /// <summary>
-        /// 192-bit
-        /// </summary>
-        Aes192 = 192,
-        /// <summary>
-        /// 256-bit
-        /// </summary>
-        Aes256 = 256
     }
 }
