@@ -74,11 +74,12 @@ namespace Rijndael256
             // Calculate MAC from cipher
             var mac = CalculateMac(cipher, keys.MacKey);
 
-            // Concatenate IV + Cipher + MAC
+            // Append MAC
             var output = new byte[cipher.Length + mac.Length];
-            cipher.CopyTo(output, 0);
-            mac.CopyTo(output, cipher.Length);
+            Buffer.BlockCopy(cipher, 0, output, 0, cipher.Length);
+            Buffer.BlockCopy(mac, 0, output, cipher.Length, mac.Length);
 
+            // IV + Cipher + MAC
             return output;
         }
 
