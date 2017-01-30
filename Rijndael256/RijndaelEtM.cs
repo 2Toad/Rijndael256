@@ -137,7 +137,7 @@ namespace Rijndael256
         /// <param name="ciphertext">The ciphertext.</param>
         /// <param name="key">The key.</param>
         /// <returns>The MAC.</returns>
-        private static byte[] CalculateMac(byte[] ciphertext, byte[] key)
+        public static byte[] CalculateMac(byte[] ciphertext, byte[] key)
         {
             return Hash.Pbkdf2(ciphertext, key, HashIterations);
         }
