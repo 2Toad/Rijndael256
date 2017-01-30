@@ -55,6 +55,41 @@ namespace Rijndael256
         }
 
         /// <summary>
+        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// </summary>
+        /// <param name="data">The data to encrypt.</param>
+        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
+        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
+        /// <returns>The encrypted data.</returns>
+        public static byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
+        {
+            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException(nameof(iv), "AES requires an Initialization Vector of 128-bits.");
+
+            byte[] cipher;
+
+            using (var ms = new MemoryStream())
+            {
+                // Create a CryptoStream to process the data
+                using (var cs = new CryptoStream(ms, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
+                {
+                    // Encrypt the data
+                    cs.Write(data, 0, data.Length);
+                    cs.FlushFinalBlock();
+                }
+
+                cipher = ms.ToArray();
+            }
+
+            // Concatenate IV + Cipher
+            var output = new byte[iv.Length + cipher.Length];
+            iv.CopyTo(output, 0);
+            cipher.CopyTo(output, iv.Length);
+
+            return output;
+        }
+
+        /// <summary>
         /// Encrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
@@ -109,6 +144,30 @@ namespace Rijndael256
         }
 
         /// <summary>
+        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// </summary>
+        /// <param name="data">The data to decrypt.</param>
+        /// <param name="password">The password to decrypt the data with.</param>
+        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
+        /// <returns>The decrypted data.</returns>
+        public static string Decrypt(byte[] data, string password, KeySize keySize)
+        {
+            using (var ms = new MemoryStream(data))
+            {
+                // Read the IV from the beginning of the encrypted string
+                var iv = new byte[InitializationVectorSize];
+                ms.Read(iv, 0, iv.Length);
+
+                // Create a CryptoStream to process the data
+                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
+                {
+                    // Decrypt data and convert it to a string
+                    using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
         /// Decrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
         /// <param name="inFile">The file to decrypt.</param>
@@ -142,65 +201,6 @@ namespace Rijndael256
                             cs.Write(buffer, 0, bytesRead);
                         }
                     }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
-        /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
-        /// <param name="iv">The initialization vector. Must be 128-bits.</param>
-        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
-        {
-            if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException(nameof(iv), "AES requires an Initialization Vector of 128-bits.");
-
-            byte[] cipher;
-
-            using (var ms = new MemoryStream())
-            {
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(ms, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
-                {
-                    // Encrypt the data
-                    cs.Write(data, 0, data.Length);
-                    cs.FlushFinalBlock();
-                }
-
-                cipher = ms.ToArray();
-            }
-
-            // Concatenate IV + Cipher
-            var output = new byte[iv.Length + cipher.Length];
-            iv.CopyTo(output, 0);
-            cipher.CopyTo(output, iv.Length);
-
-            return output;
-        }
-
-        /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
-        /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static string Decrypt(byte[] data, string password, KeySize keySize)
-        {
-            using (var ms = new MemoryStream(data))
-            {
-                // Read the IV from the beginning of the encrypted string
-                var iv = new byte[InitializationVectorSize];
-                ms.Read(iv, 0, iv.Length);
-
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
-                {
-                    // Decrypt data and convert it to a string
-                    using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
                 }
             }
         }
