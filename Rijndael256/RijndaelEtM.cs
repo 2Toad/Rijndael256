@@ -14,124 +14,132 @@ using System.Text;
 namespace Rijndael256
 {
     /// <summary>
-    /// Authenticated implementation of the Rijndael symmetric-key cipher using
-    /// the Encrypt then MAC (EtM) strategy.
+    /// AES implementation of the Rijndael symmetric-key cipher using
+    /// the Encrypt-then-MAC (EtM) mode for Authenticated Encryption.
     /// </summary>
     public class RijndaelEtM : Rijndael
     {
         /// <summary>
-        /// Encrypts data using the "Encrypt then MAC" (EtM) strategy via the Rijndael cipher in CBC 
-        /// mode with a password derived HMAC SHA-512 salt. A random 128-bit Initialization Vector 
-        /// is generated for the cipher.
+        /// Encrypts plaintext using the Encrypt-then-MAC (EtM) mode via the Rijndael cipher in 
+        /// CBC mode with a password derived HMAC SHA-512 salt. A random 128-bit Initialization 
+        /// Vector is generated for the cipher.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static new string Encrypt(string data, string password, KeySize keySize)
+        /// <returns>The Base64 encoded EtM ciphertext.</returns>
+        public static new string Encrypt(string plaintext, string password, KeySize keySize)
         {
-            return Encrypt(Encoding.UTF8.GetBytes(data), password, keySize);
+            return Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize);
         }
 
         /// <summary>
-        /// Encrypts data using the "Encrypt then MAC" (EtM) strategy via the Rijndael cipher in CBC 
-        /// mode with a password derived HMAC SHA-512 salt. A random 128-bit Initialization Vector 
-        /// is generated for the cipher.
+        /// Encrypts plaintext using the Encrypt-then-MAC (EtM) mode via the Rijndael cipher in 
+        /// CBC mode with a password derived HMAC SHA-512 salt. A random 128-bit Initialization 
+        /// Vector is generated for the cipher.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static new string Encrypt(byte[] data, string password, KeySize keySize)
+        /// <returns>The Base64 encoded EtM ciphertext.</returns>
+        public static new string Encrypt(byte[] plaintext, string password, KeySize keySize)
         {
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
 
-            // Encrypt the data
-            var cipher = Encrypt(data, password, iv, keySize);
+            // Encrypt the plaintext
+            var etmCiphertext = Encrypt(plaintext, password, iv, keySize);
 
-            // Base64 encode the cipher
-            return Convert.ToBase64String(cipher);
+            // Encode the EtM ciphertext
+            return Convert.ToBase64String(etmCiphertext);
         }
 
         /// <summary>
-        /// Encrypts data using the "Encrypt then MAC" (EtM) strategy via the Rijndael cipher in CBC 
-        /// mode with a password derived HMAC SHA-512 salt.
+        /// Encrypts plaintext using the Encrypt-then-MAC (EtM) mode via the Rijndael cipher in 
+        /// CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="iv">The initialization vector. Must be 128-bits.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static new byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
+        /// <returns>The EtM ciphertext.</returns>
+        public static new byte[] Encrypt(byte[] plaintext, string password, byte[] iv, KeySize keySize)
         {
-            // Generate keys
+            // Generate authentication keys
             var keys = AuthKeys.Generate(password);
 
-            // Encrypt the data (returns IV + Cipher)
-            var cipher = Rijndael.Encrypt(data, keys.CipherKey, iv, keySize);
+            // Encrypt the plaintext
+            var ciphertext = Rijndael.Encrypt(plaintext, keys.CipherKey, iv, keySize);
 
-            // Calculate MAC from cipher
-            var mac = CalculateMac(cipher, keys.MacKey);
+            // Calculate the MAC from the ciphertext
+            var mac = CalculateMac(ciphertext, keys.MacKey);
 
-            // Append MAC
-            var output = new byte[cipher.Length + mac.Length];
-            Buffer.BlockCopy(cipher, 0, output, 0, cipher.Length);
-            Buffer.BlockCopy(mac, 0, output, cipher.Length, mac.Length);
+            // Append the MAC to the ciphertext
+            var etmCiphertext = new byte[ciphertext.Length + mac.Length];
+            Buffer.BlockCopy(ciphertext, 0, etmCiphertext, 0, ciphertext.Length);
+            Buffer.BlockCopy(mac, 0, etmCiphertext, ciphertext.Length, mac.Length);
 
             // IV + Cipher + MAC
-            return output;
+            return etmCiphertext;
         }
 
         /// <summary>
-        /// Decrypts authenticated ciphers using Rijndael in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Decrypts EtM ciphertext using the Rijndael cipher in CBC mode with a password derived 
+        /// HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static new string Decrypt(string data, string password, KeySize keySize)
+        /// <param name="etmCiphertext">The Base64 encoded EtM ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the EtM ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the EtM ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static new string Decrypt(string etmCiphertext, string password, KeySize keySize)
         {
-            return Decrypt(Convert.FromBase64String(data), password, keySize);
+            return Decrypt(Convert.FromBase64String(etmCiphertext), password, keySize);
         }
 
         /// <summary>
-        /// Decrypts authenticated ciphers using Rijndael in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Decrypts authenticated ciphertext using the Rijndael cipher in CBC mode with a password derived 
+        /// HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static new string Decrypt(byte[] data, string password, KeySize keySize)
+        /// <param name="etmCiphertext">The EtM ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the EtM ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the EtM ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static new string Decrypt(byte[] etmCiphertext, string password, KeySize keySize)
         {
-            // Generate keys
+            // Generate authentication keys
             var keys = AuthKeys.Generate(password);
 
-            // Split (IV + Cipher) + MAC
+            // Extract the ciphertext and MAC from the EtM ciphertext
             var mac = new byte[keys.MacKey.Length];
-            var cipher = new byte[data.Length - mac.Length];
-            using (var ms = new MemoryStream(data))
+            var ciphertext = new byte[etmCiphertext.Length - mac.Length];
+            using (var ms = new MemoryStream(etmCiphertext))
             {
-                // Read the IV + Cipher from the beginning of the encrypted string
-                ms.Read(cipher, 0, cipher.Length);
+                // Extract the ciphertext
+                ms.Read(ciphertext, 0, ciphertext.Length);
 
-                // Read the MAC from the end of the encrypted string
+                // Extract the MAC
                 ms.Read(mac, 0, mac.Length);
             }
 
-            // Calculate MAC from cipher
-            var cipherMac = CalculateMac(cipher, keys.MacKey);
+            // Calculate the MAC from the ciphertext
+            var newMac = CalculateMac(ciphertext, keys.MacKey);
 
-            // Validate MAC
-            if (!mac.SequenceEqual(cipherMac)) throw new Exception("Authorization failed!");
+            // Authenticate ciphertext
+            if (!mac.SequenceEqual(newMac)) throw new Exception("Authentication failed!");
 
-            // Decrypt cipher
-            return Rijndael.Decrypt(cipher, keys.CipherKey, keySize);
+            // Decrypt the ciphertext
+            return Rijndael.Decrypt(ciphertext, keys.CipherKey, keySize);
         }
 
-        private static byte[] CalculateMac(byte[] cipher, byte[] key)
+        /// <summary>
+        /// Calculates the MAC for a ciphertext.
+        /// </summary>
+        /// <param name="ciphertext">The ciphertext.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The MAC.</returns>
+        private static byte[] CalculateMac(byte[] ciphertext, byte[] key)
         {
-            return Hash.Pbkdf2(cipher, key, 10000);
+            return Hash.Pbkdf2(ciphertext, key, HashIterations);
         }
     }
 }

@@ -15,88 +15,88 @@ namespace Rijndael256.Tests
     public class RijndaelEtMTests
     {
         const string Password = "Tomatoe Belize Gestalt Sierra";
-        static readonly byte[] InitializationVector = Encoding.UTF8.GetBytes("D6BB4C14C3BF491F");
-        const string Data = "This is my AES Authenticated secret phrase.";
-        const string Cipher128 = "RDZCQjRDMTRDM0JGNDkxRkArkEm90ErIS0WCUfikunHgIwlfdPFqw9nfupUeC9TMqY6H2dOSs5jwmbNzGGCQV2Ve/RF24XigznkUwCTYQTNYAJpArITlx8G5grSmJAlWYZ3zSZH1DKrPGOfGxm5WmyfcUyYaMyZ3XBWTJAejzpE=";
-        const string Cipher192 = "RDZCQjRDMTRDM0JGNDkxRn2W9qZjyZWePUzBqARLO+qv7djOGOiItxZDvRa2kOJ9jco+aECaA+Lh9Ak+0/1pscunkkBMK8GdYEZu7sRr6iHsUo8LITJ32nZPk/fbHKnATwVLe/iD+73Q68obCoI8ojRrC5VBLh3VtPh4WF8UF8Q=";
-        const string Cipher256 = "RDZCQjRDMTRDM0JGNDkxRq5TioN0HlvFkhBmFF86p6oV8RVmjM0HZIb463VmMXzBx8AY2Or8YvPZs/vpyG3U2lg8tDJxc3cFqzhMrcv97dTAMrdrV93vSV4K9jLeA/OQzKOwmo6XIubGDYxDlzT9YYd7eEzdqWx3O/rwTSZpELA=";
+        static readonly byte[] Iv = Encoding.UTF8.GetBytes("D6BB4C14C3BF491F");
+        const string Plaintext = "A secret phrase to test AES using AE Encrypt-then-MAC mode.";
+        const string Proof128 = "RDZCQjRDMTRDM0JGNDkxRtS+RAdwVMS6M5pj72jp1pV0aVj4QvZ5EBWQgwzSvF3i5K9PiI8BoV4X0jg9+kBcJu1YJCStyy+GhUfCIpeFoIakL43pla1AmYtw4s5ZK2Vst+eWsrcRgz/087FjfNtWwAqd1OtH8CgNkpOK+7WD9uP2hBK3fYnameaK/egB4Xdc";
+        const string Proof192 = "RDZCQjRDMTRDM0JGNDkxRnUSZIKdb+0yFIiQdG2z9DHcqEWBv6TLuJGo4iQdRPcWjcIh+xjU3MxAel+1V6rIT2QsqyEHgDj/UmJinEwEn0JzV9tor4K0mS/ELRL1ziIs8DeNOXmDJdL2N5ivz6Fx1vahgiXDCG4jbZfwzLexG/yOIsFdN5EDSIGmyVEbRV0g";
+        const string Proof256 = "RDZCQjRDMTRDM0JGNDkxRtwcUOKuBaOOpLPY2hUdMZC9flT2NF9oOVCGTb0kGugKZ7XYd/AlHG1JbBwcfmfGffkcP8tsrc02aBUNwSXzMP4ssvTFAdeOFgahnomVwL1W2Gbhd7bqTKIrptYzBPlKDOWOvAPWBvd4KLctZMJ2bkKZMwenqCXNq3FfNXxvggag";
 
         [Fact]
         public void Encrypt128()
         {
-            var data = Encoding.UTF8.GetBytes(Data);
-            var cipher = RijndaelEtM.Encrypt(data, Password, InitializationVector, KeySize.Aes128);
-            Assert.Equal(Convert.ToBase64String(cipher), Cipher128);
+            var plaintext = Encoding.UTF8.GetBytes(Plaintext);
+            var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes128);
+            Assert.Equal(Convert.ToBase64String(etmCiphertext), Proof128);
         }
 
         [Fact]
         public void Encrypt192()
         {
-            var data = Encoding.UTF8.GetBytes(Data);
-            var cipher = RijndaelEtM.Encrypt(data, Password, InitializationVector, KeySize.Aes192);
-            Assert.Equal(Convert.ToBase64String(cipher), Cipher192);
+            var plaintext = Encoding.UTF8.GetBytes(Plaintext);
+            var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes192);
+            Assert.Equal(Convert.ToBase64String(etmCiphertext), Proof192);
         }
 
         [Fact]
         public void Encrypt256()
         {
-            var data = Encoding.UTF8.GetBytes(Data);
-            var cipher = RijndaelEtM.Encrypt(data, Password, InitializationVector, KeySize.Aes256);
-            Assert.Equal(Convert.ToBase64String(cipher), Cipher256);
+            var plaintext = Encoding.UTF8.GetBytes(Plaintext);
+            var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes256);
+            Assert.Equal(Convert.ToBase64String(etmCiphertext), Proof256);
         }
 
         [Fact]
         public void Decrypt128()
         {
-            var data = RijndaelEtM.Decrypt(Cipher128, Password, KeySize.Aes128);
-            Assert.Equal(data, Data);
+            var plaintext = RijndaelEtM.Decrypt(Proof128, Password, KeySize.Aes128);
+            Assert.Equal(plaintext, Plaintext);
         }
 
         [Fact]
         public void Decrypt192()
         {
-            var data = RijndaelEtM.Decrypt(Cipher192, Password, KeySize.Aes192);
-            Assert.Equal(data, Data);
+            var plaintext = RijndaelEtM.Decrypt(Proof192, Password, KeySize.Aes192);
+            Assert.Equal(plaintext, Plaintext);
         }
 
         [Fact]
         public void Decrypt256()
         {
-            var data = RijndaelEtM.Decrypt(Cipher256, Password, KeySize.Aes256);
-            Assert.Equal(data, Data);
+            var plaintext = RijndaelEtM.Decrypt(Proof256, Password, KeySize.Aes256);
+            Assert.Equal(plaintext, Plaintext);
         }
 
         [Fact]
         public void RandomIv128()
         {
-            var cipher1 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes128);
-            var cipher2 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes128);
-            var data = RijndaelEtM.Decrypt(cipher1, Password, KeySize.Aes128);
+            var etmCiphertext1 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes128);
+            var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes128);
+            var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes128);
 
-            Assert.Equal(data, Data);
-            Assert.NotEqual(cipher1, cipher2);
+            Assert.Equal(plaintext, Plaintext);
+            Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
 
         [Fact]
         public void RandomIv192()
         {
-            var cipher1 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes192);
-            var cipher2 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes192);
-            var data = RijndaelEtM.Decrypt(cipher1, Password, KeySize.Aes192);
+            var etmCiphertext1 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes192);
+            var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes192);
+            var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes192);
 
-            Assert.Equal(data, Data);
-            Assert.NotEqual(cipher1, cipher2);
+            Assert.Equal(plaintext, Plaintext);
+            Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
 
         [Fact]
         public void RandomIv256()
         {
-            var cipher1 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes256);
-            var cipher2 = RijndaelEtM.Encrypt(Data, Password, KeySize.Aes256);
-            var data = RijndaelEtM.Decrypt(cipher1, Password, KeySize.Aes256);
+            var etmCiphertext1 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes256);
+            var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes256);
+            var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes256);
 
-            Assert.Equal(data, Data);
-            Assert.NotEqual(cipher1, cipher2);
+            Assert.Equal(plaintext, Plaintext);
+            Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
     }
 }

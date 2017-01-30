@@ -20,106 +20,107 @@ namespace Rijndael256
     {
         internal const int InitializationVectorSize = 16;
         internal const CipherMode BlockCipherMode = CipherMode.CBC;
+        internal const int HashIterations = 10000;
 
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static string Encrypt(string data, string password, KeySize keySize)
+        /// <returns>The Base64 encoded ciphertext.</returns>
+        public static string Encrypt(string plaintext, string password, KeySize keySize)
         {
-            return Encrypt(Encoding.UTF8.GetBytes(data), password, keySize);
+            return Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize);
         }
 
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static string Encrypt(byte[] data, string password, KeySize keySize)
+        /// <returns>The Base64 encoded ciphertext.</returns>
+        public static string Encrypt(byte[] plaintext, string password, KeySize keySize)
         {
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
 
-            // Encrypt the data (returns IV + Cipher)
-            var cipher = Encrypt(data, password, iv, keySize);
+            // Encrypt the plaintext
+            var ciphertext = Encrypt(plaintext, password, iv, keySize);
 
-            // Base64 encode the cipher
-            return Convert.ToBase64String(cipher);
+            // Encode the ciphertext
+            return Convert.ToBase64String(ciphertext);
         }
 
         /// <summary>
-        /// Encrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to encrypt.</param>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="iv">The initialization vector. Must be 128-bits.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encrypted data.</returns>
-        public static byte[] Encrypt(byte[] data, string password, byte[] iv, KeySize keySize)
+        /// <returns>The ciphertext.</returns>
+        public static byte[] Encrypt(byte[] plaintext, string password, byte[] iv, KeySize keySize)
         {
             if (iv.Length != InitializationVectorSize) throw new ArgumentOutOfRangeException(nameof(iv), "AES requires an Initialization Vector of 128-bits.");
 
-            byte[] cipher;
-
+            byte[] ciphertext;
             using (var ms = new MemoryStream())
             {
-                // Insert IV at beginning of cipher
+                // Insert IV at beginning of ciphertext
                 ms.Write(iv, 0, iv.Length);
 
-                // Create a CryptoStream to process the data
+                // Create a CryptoStream to encrypt the plaintext
                 using (var cs = new CryptoStream(ms, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
                 {
-                    // Encrypt the data
-                    cs.Write(data, 0, data.Length);
+                    // Encrypt the plaintext
+                    cs.Write(plaintext, 0, plaintext.Length);
                     cs.FlushFinalBlock();
                 }
 
-                cipher = ms.ToArray();
+                ciphertext = ms.ToArray();
             }
 
             // IV + Cipher
-            return cipher;
+            return ciphertext;
         }
 
         /// <summary>
-        /// Encrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Encrypts a plaintext file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// A random 128-bit Initialization Vector is generated for the cipher.
         /// </summary>
-        /// <param name="inFile">The file to encrypt.</param>
-        /// <param name="outFile">The new encrypted file.</param>
-        /// <param name="password">The password to encrypt the file with.</param>
+        /// <param name="plaintextFile">The plaintext file to encrypt.</param>
+        /// <param name="ciphertextFile">The resulting ciphertext file.</param>
+        /// <param name="password">The password to encrypt the plaintext file with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        public static void Encrypt(string inFile, string outFile, string password, KeySize keySize)
+        public static void Encrypt(string plaintextFile, string ciphertextFile, string password, KeySize keySize)
         {
-            // Create a new output file to write the encrypted data to
-            using (var fso = new FileStream(outFile, FileMode.Create, FileAccess.Write))
+            // Create a new ciphertext file to write the ciphertext to
+            using (var fsc = new FileStream(ciphertextFile, FileMode.Create, FileAccess.Write))
             {
-                // Store the IV at the beginning of the encrypted file
+                // Store the IV at the beginning of the ciphertext file
                 var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
-                fso.Write(iv, 0, iv.Length);
+                fsc.Write(iv, 0, iv.Length);
 
-                // Create a CryptoStream to process the data
-                using (var cs = new CryptoStream(fso, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
+                // Create a CryptoStream to encrypt the plaintext
+                using (var cs = new CryptoStream(fsc, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
                 {
-                    // Open the file we want to encrypt
-                    using (var fsi = new FileStream(inFile, FileMode.Open, FileAccess.Read))
+                    // Open the plaintext file
+                    using (var fsp = new FileStream(plaintextFile, FileMode.Open, FileAccess.Read))
                     {
-                        // Create a buffer to process the input file in chunks vs reading
-                        // the whole file into memory
+                        // Create a buffer to process the plaintext file in chunks
+                        // Reading the whole file into memory can cause 
+                        // Out of Memory exceptions if the file is large
                         var buffer = new byte[4096];
 
-                        // Read a chunk of data from the input file 
+                        // Read a chunk from the plaintext file
                         int bytesRead;
-                        while ((bytesRead = fsi.Read(buffer, 0, buffer.Length)) > 0)
+                        while ((bytesRead = fsp.Read(buffer, 0, buffer.Length)) > 0)
                         {
-                            // Encrypt the data and write it to the output file
+                            // Encrypt the plaintext and write it to the ciphertext file
                             cs.Write(buffer, 0, bytesRead);
                         }
 
@@ -131,72 +132,73 @@ namespace Rijndael256
         }
 
         /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Decrypts ciphertext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static string Decrypt(string data, string password, KeySize keySize)
+        /// <param name="ciphertext">The Base64 encoded ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static string Decrypt(string ciphertext, string password, KeySize keySize)
         {
-            return Decrypt(Convert.FromBase64String(data), password, keySize);
+            return Decrypt(Convert.FromBase64String(ciphertext), password, keySize);
         }
 
         /// <summary>
-        /// Decrypts data using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Decrypts ciphertext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="data">The data to decrypt.</param>
-        /// <param name="password">The password to decrypt the data with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        /// <returns>The decrypted data.</returns>
-        public static string Decrypt(byte[] data, string password, KeySize keySize)
+        /// <param name="ciphertext">The ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static string Decrypt(byte[] ciphertext, string password, KeySize keySize)
         {
-            using (var ms = new MemoryStream(data))
+            using (var ms = new MemoryStream(ciphertext))
             {
-                // Read the IV from the beginning of the encrypted string
+                // Extract the IV from the ciphertext
                 var iv = new byte[InitializationVectorSize];
                 ms.Read(iv, 0, iv.Length);
 
-                // Create a CryptoStream to process the data
+                // Create a CryptoStream to decrypt the ciphertext
                 using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
                 {
-                    // Decrypt data and convert it to a string
+                    // Decrypt the ciphertext
                     using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
                 }
             }
         }
 
         /// <summary>
-        /// Decrypts a file using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// Decrypts ciphertext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
-        /// <param name="inFile">The file to decrypt.</param>
-        /// <param name="outFile">The new decrypted file.</param>
-        /// <param name="password">The password to decrypt the file with.</param>
-        /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
-        public static void Decrypt(string inFile, string outFile, string password, KeySize keySize)
+        /// <param name="ciphertextFile">The ciphertext file to decrypt.</param>
+        /// <param name="plaintextFile">The resulting plaintext file.</param>
+        /// <param name="password">The password to decrypt the ciphertext file with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the ciphertext file.</param>
+        public static void Decrypt(string ciphertextFile, string plaintextFile, string password, KeySize keySize)
         {
-            // Open the file we want to decrypt
-            using (var fsi = new FileStream(inFile, FileMode.Open, FileAccess.Read))
+            // Open the ciphertext file
+            using (var fsc = new FileStream(ciphertextFile, FileMode.Open, FileAccess.Read))
             {
-                // Read the IV from the beginning of the encrypted file
+                // Read the IV from the beginning of the ciphertext file
                 var iv = new byte[InitializationVectorSize];
-                fsi.Read(iv, 0, iv.Length);
+                fsc.Read(iv, 0, iv.Length);
 
-                // Create a new output file to write the decrypted data to
-                using (var fso = new FileStream(outFile, FileMode.Create, FileAccess.Write))
+                // Create a new plaintext file to write the plaintext to
+                using (var fsp = new FileStream(plaintextFile, FileMode.Create, FileAccess.Write))
                 {
-                    // Create a CryptoStream to process the data
-                    using (var cs = new CryptoStream(fso, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Write))
+                    // Create a CryptoStream to decrypt the ciphertext
+                    using (var cs = new CryptoStream(fsp, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Write))
                     {
-                        // Create a buffer to process the input file in chunks vs reading
-                        // the whole file into memory
+                        // Create a buffer to process the plaintext file in chunks
+                        // Reading the whole file into memory can cause 
+                        // Out of Memory exceptions if the file is large
                         var buffer = new byte[4096];
 
-                        // Read a chunk of data from the input file 
+                        // Read a chunk from the ciphertext file
                         int bytesRead;
-                        while ((bytesRead = fsi.Read(buffer, 0, buffer.Length)) > 0)
+                        while ((bytesRead = fsc.Read(buffer, 0, buffer.Length)) > 0)
                         {
-                            // Decrypt the data and write it to the output file
+                            // Decrypt the ciphertext and write it to the plaintext file
                             cs.Write(buffer, 0, bytesRead);
                         }
                     }
@@ -205,7 +207,7 @@ namespace Rijndael256
         }
 
         /// <summary>
-        /// Generates a cryptographic key from the specified password.
+        /// Generates a cryptographic key from a password.
         /// </summary>
         /// <param name="password">The password.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
@@ -213,16 +215,16 @@ namespace Rijndael256
         public static byte[] GenerateKey(string password, KeySize keySize)
         {
             // Create a salt to help prevent rainbow table attacks
-            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), 10000);
+            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), HashIterations);
 
             // Generate a key from the password and salt
-            return Hash.Pbkdf2(password, salt, 10000, (int)keySize / 8);
+            return Hash.Pbkdf2(password, salt, HashIterations, (int)keySize / 8);
         }
 
         /// <summary>
         /// Creates a symmetric Rijndael encryptor.
         /// </summary>
-        /// <param name="password">The password to encrypt the data with.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="iv">The initialization vector. Must be 128-bits.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
         /// <returns>The symmetric encryptor.</returns>
@@ -240,7 +242,7 @@ namespace Rijndael256
         /// <summary>
         /// Creates a symmetric Rijndael decryptor.
         /// </summary>
-        /// <param name="password">The password to decrypt the data with.</param>
+        /// <param name="password">The password to decrypt the ciphertext with.</param>
         /// <param name="iv">The initialization vector. Must be 128-bits.</param>
         /// <param name="keySize">The cipher key size.</param>
         /// <returns>The symmetric decryptor.</returns>
