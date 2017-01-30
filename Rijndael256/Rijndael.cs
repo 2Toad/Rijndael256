@@ -245,7 +245,7 @@ namespace Rijndael256
         /// <param name="iv">The initialization vector. Must be 128-bits.</param>
         /// <param name="keySize">The cipher key size.</param>
         /// <returns>The symmetric decryptor.</returns>
-        internal static ICryptoTransform CreateDecryptor(string password, byte[] iv, KeySize keySize)
+        public static ICryptoTransform CreateDecryptor(string password, byte[] iv, KeySize keySize)
         {
 #if NET452
             var rijndael = new RijndaelManaged { Mode = BlockCipherMode };
