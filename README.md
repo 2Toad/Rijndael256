@@ -1,6 +1,7 @@
 # Rijndael256
 
-[![NuGet](https://img.shields.io/nuget/v/Rijndael256.svg?maxAge=2592000)](https://www.nuget.org/packages/Rijndael256/)
+[![NuGet](https://img.shields.io/nuget/v/Rijndael256.svg?maxAge=86400)](https://www.nuget.org/packages/Rijndael256/)
+[![Build Status](https://travis-ci.org/2Toad/Rijndael256.svg?branch=master)](https://travis-ci.org/2Toad/Rijndael256)
 
 AES cryptographic library for .NET Framework and .NET Core
 
