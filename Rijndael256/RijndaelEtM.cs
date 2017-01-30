@@ -65,14 +65,14 @@ namespace Rijndael256
         /// <returns>The EtM ciphertext.</returns>
         public static new byte[] Encrypt(byte[] plaintext, string password, byte[] iv, KeySize keySize)
         {
-            // Generate authentication keys
-            var keys = AuthKeys.Generate(password);
+            // Generate AE keys
+            var keyRing = AeKeyRing.Generate(password);
 
             // Encrypt the plaintext
-            var ciphertext = Rijndael.Encrypt(plaintext, keys.CipherKey, iv, keySize);
+            var ciphertext = Rijndael.Encrypt(plaintext, keyRing.CipherKey, iv, keySize);
 
             // Calculate the MAC from the ciphertext
-            var mac = CalculateMac(ciphertext, keys.MacKey);
+            var mac = CalculateMac(ciphertext, keyRing.MacKey);
 
             // Append the MAC to the ciphertext
             var etmCiphertext = new byte[ciphertext.Length + mac.Length];
@@ -106,11 +106,11 @@ namespace Rijndael256
         /// <returns>The plaintext.</returns>
         public static new string Decrypt(byte[] etmCiphertext, string password, KeySize keySize)
         {
-            // Generate authentication keys
-            var keys = AuthKeys.Generate(password);
+            // Generate AE keys
+            var keyRing = AeKeyRing.Generate(password);
 
             // Extract the ciphertext and MAC from the EtM ciphertext
-            var mac = new byte[keys.MacKey.Length];
+            var mac = new byte[keyRing.MacKey.Length];
             var ciphertext = new byte[etmCiphertext.Length - mac.Length];
             using (var ms = new MemoryStream(etmCiphertext))
             {
@@ -122,13 +122,13 @@ namespace Rijndael256
             }
 
             // Calculate the MAC from the ciphertext
-            var newMac = CalculateMac(ciphertext, keys.MacKey);
+            var newMac = CalculateMac(ciphertext, keyRing.MacKey);
 
             // Authenticate ciphertext
             if (!mac.SequenceEqual(newMac)) throw new Exception("Authentication failed!");
 
             // Decrypt the ciphertext
-            return Rijndael.Decrypt(ciphertext, keys.CipherKey, keySize);
+            return Rijndael.Decrypt(ciphertext, keyRing.CipherKey, keySize);
         }
 
         /// <summary>

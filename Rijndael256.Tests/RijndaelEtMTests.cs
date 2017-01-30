@@ -27,7 +27,7 @@ namespace Rijndael256.Tests
         static readonly byte[] MacProof192 = Convert.FromBase64String("20SB6UTQZmIcrHROvR7UIrIWlQ6VEDYmJy0ZI/iO6fJh6JOyPPEADsGvHPVfWlSbB/dlwu8NKD5xf3uF61mswA==");
         static readonly byte[] MacProof256 = Convert.FromBase64String("BHpBmrYfKRN/Xg1ZULOWMD7naD/dgydjKXPhQIauOtgnDXI6HPY+N1C6IrjKP0JbFfMbGVuoADA3eC2q/ZcX2g==");
 
-        static readonly AuthKeys AuthKeysProof = new AuthKeys {
+        static readonly AeKeyRing AeKeyRingProof = new AeKeyRing {
             CipherKey = "238FB434AE3ADCFFB6C02CD7275EB3847A957E1726AC55204C6CF8DF1F0EA2D8",
             MacKey = Convert.FromBase64String("MkQ0NTM2MzYyOUExM0I2MDVCQjUyNjNFNkY0N0U4OEVBOTk5NEI1RDA0NkZCQTA5NUI1QjQzQTkwODY0RDA2Mg==")
         };
@@ -135,12 +135,12 @@ namespace Rijndael256.Tests
         }
 
         [Fact]
-        public void GenerateAuthKeys()
+        public void GenerateAeKeyRing()
         {
-            var keys = AuthKeys.Generate(Password);
+            var keyRing = AeKeyRing.Generate(Password);
 
-            Assert.Equal(keys.CipherKey, AuthKeysProof.CipherKey);
-            Assert.True(keys.MacKey.SequenceEqual(AuthKeysProof.MacKey));
+            Assert.Equal(keyRing.CipherKey, AeKeyRingProof.CipherKey);
+            Assert.True(keyRing.MacKey.SequenceEqual(AeKeyRingProof.MacKey));
         }
     }
 }
