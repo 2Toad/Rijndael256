@@ -211,7 +211,7 @@ namespace Rijndael256
         /// <param name="password">The password.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
         /// <returns>The cryptographic key.</returns>
-        internal static byte[] GenerateKey(string password, KeySize keySize)
+        public static byte[] GenerateKey(string password, KeySize keySize)
         {
             // Create a salt to help prevent rainbow table attacks
             var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), 10000);
