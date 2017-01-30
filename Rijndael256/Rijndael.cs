@@ -70,6 +70,9 @@ namespace Rijndael256
 
             using (var ms = new MemoryStream())
             {
+                // Insert IV at beginning of cipher
+                ms.Write(iv, 0, iv.Length);
+
                 // Create a CryptoStream to process the data
                 using (var cs = new CryptoStream(ms, CreateEncryptor(password, iv, keySize), CryptoStreamMode.Write))
                 {
@@ -81,12 +84,8 @@ namespace Rijndael256
                 cipher = ms.ToArray();
             }
 
-            // Concatenate IV + Cipher
-            var output = new byte[iv.Length + cipher.Length];
-            iv.CopyTo(output, 0);
-            cipher.CopyTo(output, iv.Length);
-
-            return output;
+            // IV + Cipher
+            return cipher;
         }
 
         /// <summary>
