@@ -17,7 +17,7 @@ namespace Rijndael256
     /// Authenticated implementation of the Rijndael symmetric-key cipher using
     /// the Encrypt then MAC (EtM) strategy.
     /// </summary>
-    public class RijndaelEtM : RijndaelBase
+    public class RijndaelEtM : Rijndael
     {
         /// <summary>
         /// Encrypts data using the "Encrypt then MAC" (EtM) strategy via the Rijndael cipher in CBC 
@@ -28,7 +28,7 @@ namespace Rijndael256
         /// <param name="password">The password to encrypt the data with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
         /// <returns>The encrypted data.</returns>
-        public static string Encrypt(string data, string password, KeySize keySize)
+        public static new string Encrypt(string data, string password, KeySize keySize)
         {
             return Encrypt(Encoding.UTF8.GetBytes(data), password, keySize);
         }
@@ -42,7 +42,7 @@ namespace Rijndael256
         /// <param name="password">The password to encrypt the data with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
         /// <returns>The encrypted data.</returns>
-        public static string Encrypt(byte[] data, string password, KeySize keySize)
+        public static new string Encrypt(byte[] data, string password, KeySize keySize)
         {
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
@@ -69,7 +69,7 @@ namespace Rijndael256
             var keys = AuthKeys.Generate(password);
 
             // Encrypt the data (returns IV + Cipher)
-            var cipher = RijndaelBase.Encrypt(data, keys.CipherKey, iv, keySize);
+            var cipher = Rijndael.Encrypt(data, keys.CipherKey, iv, keySize);
 
             // Calculate MAC from cipher
             var mac = CalculateMac(cipher, keys.MacKey);
@@ -89,7 +89,7 @@ namespace Rijndael256
         /// <param name="password">The password to decrypt the data with.</param>
         /// <param name="keySize">The size of the cipher key used to encrypt the data.</param>
         /// <returns>The decrypted data.</returns>
-        public static string Decrypt(string data, string password, KeySize keySize)
+        public static new string Decrypt(string data, string password, KeySize keySize)
         {
             return Decrypt(Convert.FromBase64String(data), password, keySize);
         }
@@ -125,7 +125,7 @@ namespace Rijndael256
             if (!mac.SequenceEqual(cipherMac)) throw new Exception("Authorization failed!");
 
             // Decrypt cipher
-            return RijndaelBase.Decrypt(cipher, keys.CipherKey, keySize);
+            return Rijndael.Decrypt(cipher, keys.CipherKey, keySize);
         }
 
         private static byte[] CalculateMac(byte[] cipher, byte[] key)
