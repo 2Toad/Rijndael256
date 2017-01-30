@@ -6,10 +6,6 @@
  * https://github.com/2Toad/Rijndael256
  */
 
-using System;
-using System.Security.Cryptography;
-using System.Text;
-
 namespace Rijndael256
 {
     /// <summary>
