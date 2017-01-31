@@ -9,9 +9,9 @@
 namespace Rijndael256
 {
     /// <summary>
-    /// Global configurations
+    /// A collection of mutable defaults
     /// </summary>
-    public static class Config
+    public static class Settings
     {
         /// <summary>
         /// The number of iterations used to derive hashes.

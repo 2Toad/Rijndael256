@@ -139,7 +139,7 @@ namespace Rijndael256
         /// <returns>The MAC.</returns>
         public static byte[] CalculateMac(byte[] ciphertext, byte[] key)
         {
-            return Hash.Pbkdf2(ciphertext, key, Config.HashIterations);
+            return Hash.Pbkdf2(ciphertext, key, Settings.HashIterations);
         }
     }
 }

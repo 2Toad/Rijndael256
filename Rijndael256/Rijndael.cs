@@ -214,10 +214,10 @@ namespace Rijndael256
         public static byte[] GenerateKey(string password, KeySize keySize)
         {
             // Create a salt to help prevent rainbow table attacks
-            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), Config.HashIterations);
+            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), Settings.HashIterations);
 
             // Generate a key from the password and salt
-            return Hash.Pbkdf2(password, salt, Config.HashIterations, (int)keySize / 8);
+            return Hash.Pbkdf2(password, salt, Settings.HashIterations, (int)keySize / 8);
         }
 
         /// <summary>

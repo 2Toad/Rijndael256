@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Rijndael256.Tests
 {
-    public class ConfigTests
+    public class SettingsTests
     {
         const string Plaintext = "A secret phrase to test hashing.";
         const string Salt = "0A9FDB669FA44FF1BEC484A1BE6B6E2A";
@@ -22,24 +22,24 @@ namespace Rijndael256.Tests
         {
             var proofDefault = Convert.FromBase64String("pGnGDWwZAVvIlmDgGZ1gkvqEqm2DvkYdPRygUjZGIW/Ts+q2R+ZdMlRzfV1Dlz4udcHwS+A/1TjP+6jBDUTBMQ==");
 
-            var hashDefault = Hash.Pbkdf2(Plaintext, Salt, Config.HashIterations);
+            var hashDefault = Hash.Pbkdf2(Plaintext, Salt, Settings.HashIterations);
             Assert.True(hashDefault.SequenceEqual(proofDefault));
 
-            Config.HashIterations = 500;
+            Settings.HashIterations = 500;
 
-            var hashChanged = Hash.Pbkdf2(Plaintext, Salt, Config.HashIterations);
+            var hashChanged = Hash.Pbkdf2(Plaintext, Salt, Settings.HashIterations);
             Assert.False(hashChanged.SequenceEqual(proofDefault));
 
             RestoreDefaults();
         }
 
         /// <summary>
-        /// Config is global, so we need to restore defaults before the other
+        /// Settings is global, so we need to restore defaults before the other
         /// unit tests, which depend on said defaults, are run.
         /// </summary>
         private void RestoreDefaults()
         {
-            Config.HashIterations = 10000;
+            Settings.HashIterations = 10000;
         }
     }
 }
