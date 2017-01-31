@@ -20,7 +20,6 @@ namespace Rijndael256
     {
         internal const int InitializationVectorSize = 16;
         internal const CipherMode BlockCipherMode = CipherMode.CBC;
-        internal const int HashIterations = 10000;
 
         /// <summary>
         /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
@@ -215,10 +214,10 @@ namespace Rijndael256
         public static byte[] GenerateKey(string password, KeySize keySize)
         {
             // Create a salt to help prevent rainbow table attacks
-            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), HashIterations);
+            var salt = Hash.Pbkdf2(password, Hash.Sha512(password + password.Length), Config.HashIterations);
 
             // Generate a key from the password and salt
-            return Hash.Pbkdf2(password, salt, HashIterations, (int)keySize / 8);
+            return Hash.Pbkdf2(password, salt, Config.HashIterations, (int)keySize / 8);
         }
 
         /// <summary>
