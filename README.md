@@ -41,7 +41,7 @@ string ciphertext = Rijndael.Encrypt(plaintext, password, KeySize.Aes256);
 plaintext = Rijndael.Decrypt(ciphertext, password, KeySize.Aes256);
 ```
 
-### Encrypt a string using Authenticated Encryption (EtM)
+### Encrypt a string using [Authenticated Encryption (AE)](#authenticated-encryption-ae)
 
 ```C#
 string password = "KQpc@HuQ66b$z37";  // The password to encrypt the data with
@@ -68,15 +68,27 @@ Rijndael.Encrypt(plaintextFile, ciphertextFile, password, KeySize.Aes256);
 Rijndael.Decrypt(ciphertextFile, plaintextFile, password, KeySize.Aes256);
 ```
 
-## Authenticated Encryption (AE)
+----------
+
+## Configuration
+
+The *Config* object is a collection of mutable defaults used throughout the library
+
+| Name           | Description                                    | Default |
+|----------------|------------------------------------------------|---------|
+| HashIterations | The number of iterations used to derive hashes | 10000   |
+
+## Appendix
+
+### Authenticated Encryption (AE)
 
 AE adds an integrity check to the resulting ciphertext, so we can authenticate the ciphertext before decrypting it. Whereas encryption provides confidentiality, AE adds authenticity.
 
-### Encrypt-then-MAC (EtM)
+#### Encrypt-then-MAC (EtM)
 
 Rijndael256 offers AE via the EtM encryption mode, which was standardized in ISO/IEC 19772:2009.
 
-#### EtM Workflow
+##### EtM Workflow
 
  1. **Encryption**:
 	 1. The plaintext is encrypted.
