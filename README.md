@@ -70,13 +70,22 @@ Rijndael.Decrypt(ciphertextFile, plaintextFile, password, KeySize.Aes256);
 
 ----------
 
-## Configuration
+## Settings
 
-The *Config* object is a collection of mutable defaults used throughout the library
+The *Settings* object is a collection of mutable defaults used throughout the library. Modification of these defaults is not necessary, but is made available for developers who want finer control of Rijndael256.
 
-| Name           | Description                                    | Default |
+| Setting        | Description                                    | Default |
 |----------------|------------------------------------------------|---------|
 | HashIterations | The number of iterations used to derive hashes | 10000   |
+
+### Example
+
+```C#
+// The HashIterations setting is used in several places throughout the lib,
+// with Rijndael.Encrypt being just one of them. After making this change,
+// any future calls to Rijndael.Encrypt will make use of this new value
+Settings.HashIterations = 25000;
+```
 
 ## Appendix
 
