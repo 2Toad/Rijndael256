@@ -85,6 +85,9 @@ The *Settings* object is a collection of mutable defaults used throughout the li
 // with Rijndael.Encrypt being just one of them. After making this change,
 // any future calls to Rijndael.Encrypt will make use of this new value
 Settings.HashIterations = 25000;
+
+// To reset all the settings to their default values
+Settings.Reset();
 ```
 
 ## Appendix
