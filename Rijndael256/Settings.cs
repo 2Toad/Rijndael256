@@ -13,10 +13,26 @@ namespace Rijndael256
     /// </summary>
     public static class Settings
     {
+        static Settings()
+        {
+            // Set defaults during initialization
+            Reset();
+        }
+
+        /// <summary>
+        /// Resets all the settings to their default values
+        /// </summary>
+        public static void Reset()
+        {
+            HashIterations = _hashIterations;
+        }
+
         /// <summary>
         /// The number of iterations used to derive hashes.
         /// Default is 10000.
         /// </summary>
-        public static int HashIterations = 10000;
+        public static int HashIterations;
+
+        private const int _hashIterations = 10000;
     }
 }
