@@ -10,12 +10,30 @@ using System;
 using System.Linq;
 using Xunit;
 
+// WARNING: HERE BE DRAGONS!
+// We must disable xUnit's asyncrhonous test excution because the Settings
+// object's default values are required by the other unit tests
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Rijndael256.Tests
 {
     public class SettingsTests
     {
         const string Plaintext = "A secret phrase to test hashing.";
         const string Salt = "0A9FDB669FA44FF1BEC484A1BE6B6E2A";
+
+        [Fact]
+        public void Reset()
+        {
+            var defaultHashIterations = Settings.HashIterations;
+            
+            Settings.HashIterations = 777;
+            Assert.Equal(Settings.HashIterations, 777);
+            Assert.NotEqual(Settings.HashIterations, defaultHashIterations);
+
+            Settings.Reset();
+            Assert.Equal(Settings.HashIterations, defaultHashIterations);
+        }
 
         [Fact]
         public void HashIterations()
@@ -30,16 +48,9 @@ namespace Rijndael256.Tests
             var hashChanged = Hash.Pbkdf2(Plaintext, Salt, Settings.HashIterations);
             Assert.False(hashChanged.SequenceEqual(proofDefault));
 
-            RestoreDefaults();
-        }
-
-        /// <summary>
-        /// Settings is global, so we need to restore defaults before the other
-        /// unit tests, which depend on said defaults, are run.
-        /// </summary>
-        private void RestoreDefaults()
-        {
-            Settings.HashIterations = 10000;
+            // Settings is global, so we need to restore defaults before the other
+            // unit tests, which depend on said defaults, are run
+            Settings.Reset();
         }
     }
 }
