@@ -1,0 +1,51 @@
+{
+  "version": "3.2.5-*",
+  "authors": [ "2Toad, LLC", "LonghronShen" ],
+  "description": "Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key cipher Rijndael.\n\nFeatures: AES-128, AES-192, AES-256, Authenticated Encryption (AE), Encrypt-then-MAC (EtM), SHA-512, PBKDF2.",
+  "copyright": "Copyright (C)2013 2Toad, LLC. All rights reserved.",
+  "licenseUrl": "https://github.com/2Toad/Rijndael256/blob/master/LICENSE",
+  "projectUrl": "https://github.com/2Toad/Rijndael256",
+
+  "packOptions": {
+    "licenseUrl": "https://github.com/2Toad/Rijndael256/blob/master/LICENSE",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/2Toad/Rijndael256"
+    },
+    "owners": [ "2Toad, LLC", "LonghronShen" ],
+    "tags": [ "2Toad", "Rijndael256", "Security", "Cryptography", "Cryptographic", "Encryption", "Decryption", "Rijndael", "AES", "AES-128", "AES-192", "AES-256", "Authenticated", "AE", "Encrypt-then-MAC", "EtM", "SHA", "SHA-512", "PBKDF2", "Hashing" ]
+  },
+
+  "dependencies": {
+  },
+
+  "frameworks": {
+    "netstandard1.3": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "NETStandard.Library": "1.6.0"
+      },
+      "buildOptions": {
+        "define": [ "NETCORE" ]
+      }
+    },
+    "net451": {
+      "imports": [
+        "dotnet5.6",
+        "portable-net45+win8"
+      ],
+      "frameworkAssemblies": {
+      }
+    }
+  },
+
+  "buildOptions": {
+    "preserveCompilationContext": true,
+    "define": [],
+    "xmlDoc": true,
+    "nowarn": [ "CS1591" ]
+  }
+}
