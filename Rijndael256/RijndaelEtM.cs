@@ -30,7 +30,7 @@ namespace Rijndael256
         /// <returns>The Base64 encoded EtM ciphertext.</returns>
         public static new string Encrypt(string plaintext, string password, KeySize keySize)
         {
-            return Convert.ToBase64String(Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize));
+            return Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize);
         }
 
         /// <summary>
@@ -41,8 +41,8 @@ namespace Rijndael256
         /// <param name="plaintext">The plaintext to encrypt.</param>
         /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encoded EtM ciphertext.</returns>
-        public static new byte[] Encrypt(byte[] plaintext, string password, KeySize keySize)
+        /// <returns>The Base64 encoded EtM ciphertext.</returns>
+        public static new string Encrypt(byte[] plaintext, string password, KeySize keySize)
         {
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
@@ -51,7 +51,7 @@ namespace Rijndael256
             var etmCiphertext = Encrypt(plaintext, password, iv, keySize);
 
             // Encode the EtM ciphertext
-            return etmCiphertext;
+            return Convert.ToBase64String(etmCiphertext);
         }
 
         /// <summary>
@@ -93,8 +93,7 @@ namespace Rijndael256
         /// <returns>The plaintext.</returns>
         public static new string Decrypt(string etmCiphertext, string password, KeySize keySize)
         {
-            return Encoding.UTF8.GetString(
-                Decrypt(Convert.FromBase64String(etmCiphertext), password, keySize));
+            return Decrypt(Convert.FromBase64String(etmCiphertext), password, keySize);
         }
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace Rijndael256
         /// <param name="password">The password to decrypt the EtM ciphertext with.</param>
         /// <param name="keySize">The size of the cipher key used to create the EtM ciphertext.</param>
         /// <returns>The plaintext.</returns>
-        public static new byte[] Decrypt(byte[] etmCiphertext, string password, KeySize keySize)
+        public static new string Decrypt(byte[] etmCiphertext, string password, KeySize keySize)
         {
             // Generate AE keys
             var keyRing = AeKeyRing.Generate(password);

@@ -31,9 +31,7 @@ namespace Rijndael256
         /// <returns>The Base64 encoded ciphertext.</returns>
         public static string Encrypt(string plaintext, string password, KeySize keySize)
         {
-            return Convert.ToBase64String(
-                Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize)
-                );
+            return Encrypt(Encoding.UTF8.GetBytes(plaintext), password, keySize);
         }
 
         /// <summary>
@@ -43,8 +41,8 @@ namespace Rijndael256
         /// <param name="plaintext">The plaintext to encrypt.</param>
         /// <param name="password">The password to encrypt the plaintext with.</param>
         /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
-        /// <returns>The encoded ciphertext.</returns>
-        public static byte[] Encrypt(byte[] plaintext, string password, KeySize keySize)
+        /// <returns>The Base64 encoded ciphertext.</returns>
+        public static string Encrypt(byte[] plaintext, string password, KeySize keySize)
         {
             // Generate a random IV
             var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
@@ -53,7 +51,7 @@ namespace Rijndael256
             var ciphertext = Encrypt(plaintext, password, iv, keySize);
 
             // Encode the ciphertext
-            return ciphertext;
+            return Convert.ToBase64String(ciphertext);
         }
 
         /// <summary>
@@ -141,19 +139,7 @@ namespace Rijndael256
         /// <returns>The plaintext.</returns>
         public static string Decrypt(string ciphertext, string password, KeySize keySize)
         {
-            using (var ms = new MemoryStream(Convert.FromBase64String(ciphertext)))
-            {
-                // Extract the IV from the ciphertext
-                var iv = new byte[InitializationVectorSize];
-                ms.Read(iv, 0, iv.Length);
-
-                // Create a CryptoStream to decrypt the ciphertext
-                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
-                {
-                    // Decrypt the ciphertext
-                    using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
-                }
-            }
+            return Decrypt(Convert.FromBase64String(ciphertext), password, keySize);
         }
 
         /// <summary>
@@ -163,7 +149,7 @@ namespace Rijndael256
         /// <param name="password">The password to decrypt the ciphertext with.</param>
         /// <param name="keySize">The size of the cipher key used to create the ciphertext.</param>
         /// <returns>The plaintext.</returns>
-        public static byte[] Decrypt(byte[] ciphertext, string password, KeySize keySize)
+        public static string Decrypt(byte[] ciphertext, string password, KeySize keySize)
         {
             using (var ms = new MemoryStream(ciphertext))
             {
@@ -175,12 +161,7 @@ namespace Rijndael256
                 using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
                 {
                     // Decrypt the ciphertext
-                    using (var buffer = new MemoryStream())
-                    {
-                        cs.CopyTo(buffer);
-
-                        return buffer.ToArray();
-                    }
+                    using (var sr = new StreamReader(cs, Encoding.UTF8)) return sr.ReadToEnd();
                 }
             }
         }
