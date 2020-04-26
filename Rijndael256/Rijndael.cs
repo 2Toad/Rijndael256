@@ -56,6 +56,26 @@ namespace Rijndael256
 
         /// <summary>
         /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// A random 128-bit Initialization Vector is generated for the cipher.
+        /// </summary>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
+        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
+        /// <returns>The encoded ciphertext.</returns>
+        public static byte[] EncryptBinary(byte[] plaintext, string password, KeySize keySize)
+        {
+            // Generate a random IV
+            var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
+
+            // Encrypt the plaintext
+            var ciphertext = Encrypt(plaintext, password, iv, keySize);
+
+            // Encode the ciphertext
+            return ciphertext;
+        }
+
+        /// <summary>
+        /// Encrypts plaintext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
         /// <param name="plaintext">The plaintext to encrypt.</param>
         /// <param name="password">The password to encrypt the plaintext with.</param>
@@ -140,6 +160,34 @@ namespace Rijndael256
         public static string Decrypt(string ciphertext, string password, KeySize keySize)
         {
             return Decrypt(Convert.FromBase64String(ciphertext), password, keySize);
+        }
+
+        /// <summary>
+        /// Decrypts ciphertext using the Rijndael cipher in CBC mode with a password derived HMAC SHA-512 salt.
+        /// </summary>
+        /// <param name="ciphertext">The ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static byte[] DecryptBinary(byte[] ciphertext, string password, KeySize keySize)
+        {
+            using (var ms = new MemoryStream(ciphertext))
+            {
+                // Extract the IV from the ciphertext
+                var iv = new byte[InitializationVectorSize];
+                ms.Read(iv, 0, iv.Length);
+
+                // Create a CryptoStream to decrypt the ciphertext
+                using (var cs = new CryptoStream(ms, CreateDecryptor(password, iv, keySize), CryptoStreamMode.Read))
+                {
+                    // Decrypt the ciphertext
+                    using (var buffer = new MemoryStream())
+                    {
+                        cs.CopyTo(buffer);
+                        return buffer.ToArray();
+                    }
+                }
+            }
         }
 
         /// <summary>

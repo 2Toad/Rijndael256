@@ -98,5 +98,16 @@ namespace Rijndael256.Tests
             Assert.Equal(plaintext, Plaintext);
             Assert.NotEqual(ciphertext1, ciphertext2);
         }
+
+        [Fact]
+        public void BinaryBlob()
+        {
+            var plainblob = UTF8Encoding.UTF8.GetBytes(Plaintext);
+
+            var cipherblob = Rijndael.EncryptBinary(plainblob, Password, KeySize.Aes128);
+            var plainresult = Rijndael.DecryptBinary(cipherblob, Password, KeySize.Aes128);
+
+            Assert.Equal(plainblob, plainresult);
+        }
     }
 }
