@@ -56,6 +56,27 @@ namespace Rijndael256
 
         /// <summary>
         /// Encrypts plaintext using the Encrypt-then-MAC (EtM) mode via the Rijndael cipher in 
+        /// CBC mode with a password derived HMAC SHA-512 salt. A random 128-bit Initialization 
+        /// Vector is generated for the cipher.
+        /// </summary>
+        /// <param name="plaintext">The plaintext to encrypt.</param>
+        /// <param name="password">The password to encrypt the plaintext with.</param>
+        /// <param name="keySize">The cipher key size. 256-bit is stronger, but slower.</param>
+        /// <returns>The encoded EtM ciphertext.</returns>
+        public static new byte[] EncryptBinary(byte[] plaintext, string password, KeySize keySize)
+        {
+            // Generate a random IV
+            var iv = Rng.GenerateRandomBytes(InitializationVectorSize);
+
+            // Encrypt the plaintext
+            var etmCiphertext = Encrypt(plaintext, password, iv, keySize);
+
+            // Encode the EtM ciphertext
+            return etmCiphertext;
+        }
+
+        /// <summary>
+        /// Encrypts plaintext using the Encrypt-then-MAC (EtM) mode via the Rijndael cipher in 
         /// CBC mode with a password derived HMAC SHA-512 salt.
         /// </summary>
         /// <param name="plaintext">The plaintext to encrypt.</param>
@@ -94,6 +115,41 @@ namespace Rijndael256
         public static new string Decrypt(string etmCiphertext, string password, KeySize keySize)
         {
             return Decrypt(Convert.FromBase64String(etmCiphertext), password, keySize);
+        }
+
+        /// <summary>
+        /// Decrypts authenticated ciphertext using the Rijndael cipher in CBC mode with a password derived 
+        /// HMAC SHA-512 salt.
+        /// </summary>
+        /// <param name="etmCiphertext">The EtM ciphertext to decrypt.</param>
+        /// <param name="password">The password to decrypt the EtM ciphertext with.</param>
+        /// <param name="keySize">The size of the cipher key used to create the EtM ciphertext.</param>
+        /// <returns>The plaintext.</returns>
+        public static new byte[] DecryptBinary(byte[] etmCiphertext, string password, KeySize keySize)
+        {
+            // Generate AE keys
+            var keyRing = AeKeyRing.Generate(password);
+
+            // Extract the ciphertext and MAC from the EtM ciphertext
+            var mac = new byte[keyRing.MacKey.Length];
+            var ciphertext = new byte[etmCiphertext.Length - mac.Length];
+            using (var ms = new MemoryStream(etmCiphertext))
+            {
+                // Extract the ciphertext
+                ms.Read(ciphertext, 0, ciphertext.Length);
+
+                // Extract the MAC
+                ms.Read(mac, 0, mac.Length);
+            }
+
+            // Calculate the MAC from the ciphertext
+            var newMac = CalculateMac(ciphertext, keyRing.MacKey);
+
+            // Authenticate ciphertext
+            if (!mac.SequenceEqual(newMac)) throw new Exception("Authentication failed!");
+
+            // Decrypt the ciphertext
+            return Rijndael.DecryptBinary(ciphertext, keyRing.CipherKey, keySize);
         }
 
         /// <summary>
