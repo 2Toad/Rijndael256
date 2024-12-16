@@ -142,5 +142,16 @@ namespace Rijndael256.Tests
             Assert.Equal(keyRing.CipherKey, AeKeyRingProof.CipherKey);
             Assert.True(keyRing.MacKey.SequenceEqual(AeKeyRingProof.MacKey));
         }
+
+        [Fact]
+        public void BinaryBlob()
+        {
+            var plainblob = UTF8Encoding.UTF8.GetBytes(Plaintext);
+
+            var cipherblob = RijndaelEtM.EncryptBinary(plainblob, Password, KeySize.Aes128);
+            var plainresult = RijndaelEtM.DecryptBinary(cipherblob, Password, KeySize.Aes128);
+
+            Assert.Equal(plainblob, plainresult);
+        }
     }
 }
