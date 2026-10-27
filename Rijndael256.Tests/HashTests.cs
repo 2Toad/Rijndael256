@@ -22,7 +22,7 @@ namespace Rijndael256.Tests
                 "C156334EB4C120727D8FDEC9F6975809D248";
 
             var hash = Hash.Sha512(Plaintext);
-            Assert.Equal(hash, proof);
+            Assert.Equal(proof, hash);
         }
 
         [Fact]
@@ -37,9 +37,9 @@ namespace Rijndael256.Tests
             var hash1000 = Hash.Pbkdf2(Plaintext, salt, 1000);
             var hash10000 = Hash.Pbkdf2(Plaintext, salt, 10000);
 
-            Assert.Equal(Convert.ToBase64String(hash100), proof100);
-            Assert.Equal(Convert.ToBase64String(hash1000), proof1000);
-            Assert.Equal(Convert.ToBase64String(hash10000), proof10000);
+            Assert.Equal(proof100, Convert.ToBase64String(hash100));
+            Assert.Equal(proof1000, Convert.ToBase64String(hash1000));
+            Assert.Equal(proof10000, Convert.ToBase64String(hash10000));
         }
     }
 }
