@@ -180,7 +180,11 @@ namespace Rijndael256
             {
                 // Read the IV from the beginning of the ciphertext file
                 var iv = new byte[InitializationVectorSize];
-                fsc.Read(iv, 0, iv.Length);
+                int ivBytesRead = 0, read;
+                while (ivBytesRead < iv.Length && (read = fsc.Read(iv, ivBytesRead, iv.Length - ivBytesRead)) > 0)
+                {
+                    ivBytesRead += read;
+                }
 
                 // Create a new plaintext file to write the plaintext to
                 using (var fsp = new FileStream(plaintextFile, FileMode.Create, FileAccess.Write))

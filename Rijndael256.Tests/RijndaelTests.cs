@@ -26,7 +26,7 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var ciphertext = Rijndael.Encrypt(plaintext, Password, Iv, KeySize.Aes128);
-            Assert.Equal(Convert.ToBase64String(ciphertext), Proof128);
+            Assert.Equal(Proof128, Convert.ToBase64String(ciphertext));
         }
 
         [Fact]
@@ -34,7 +34,7 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var ciphertext = Rijndael.Encrypt(plaintext, Password, Iv, KeySize.Aes192);
-            Assert.Equal(Convert.ToBase64String(ciphertext), Proof192);
+            Assert.Equal(Proof192, Convert.ToBase64String(ciphertext));
         }
 
         [Fact]
@@ -42,28 +42,28 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var ciphertext = Rijndael.Encrypt(plaintext, Password, Iv, KeySize.Aes256);
-            Assert.Equal(Convert.ToBase64String(ciphertext), Proof256);
+            Assert.Equal(Proof256, Convert.ToBase64String(ciphertext));
         }
 
         [Fact]
         public void Decrypt128()
         {
             var plaintext = Rijndael.Decrypt(Proof128, Password, KeySize.Aes128);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
         public void Decrypt192()
         {
             var plaintext = Rijndael.Decrypt(Proof192, Password, KeySize.Aes192);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
         public void Decrypt256()
         {
             var plaintext = Rijndael.Decrypt(Proof256, Password, KeySize.Aes256);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Rijndael256.Tests
             var ciphertext2 = Rijndael.Encrypt(Plaintext, Password, KeySize.Aes128);
             var plaintext = Rijndael.Decrypt(ciphertext1, Password, KeySize.Aes128);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(ciphertext1, ciphertext2);
         }
 
@@ -84,7 +84,7 @@ namespace Rijndael256.Tests
             var ciphertext2 = Rijndael.Encrypt(Plaintext, Password, KeySize.Aes192);
             var plaintext = Rijndael.Decrypt(ciphertext1, Password, KeySize.Aes192);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(ciphertext1, ciphertext2);
         }
 
@@ -95,7 +95,7 @@ namespace Rijndael256.Tests
             var ciphertext2 = Rijndael.Encrypt(Plaintext, Password, KeySize.Aes256);
             var plaintext = Rijndael.Decrypt(ciphertext1, Password, KeySize.Aes256);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(ciphertext1, ciphertext2);
         }
     }

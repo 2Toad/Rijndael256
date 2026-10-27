@@ -26,6 +26,18 @@ Rijndael256 makes encrypting data and files a breeze with the AES symmetric-key 
 	* SHA-512
 	* PBKDF2
 
+### Target Frameworks
+
+| Target framework | Microsoft support status | Notes |
+|------------------|--------------------------|-------|
+| `net10.0` | Supported (LTS) until 2028-11-14 | |
+| `net9.0` | Supported (STS) until 2026-11-10 | |
+| `net8.0` | Supported (LTS) until 2026-11-10 | |
+| `net452` | **Out of support** since 2022-04-26 (.NET Framework 4.5.2) | Kept for backward compatibility. The assembly also runs on the supported .NET Framework 4.6.2+ runtimes. |
+| `netcoreapp1.0` | **Out of support** since 2019-06-27 (.NET Core 1.x) | Kept for backward compatibility only; do not use it for new development. Its `Microsoft.NETCore.App` 1.1.13 dependency has known high severity vulnerabilities that no 1.x release fixes: [CVE-2017-11770](https://github.com/advisories/GHSA-7mfr-774f-w5r9), and [CVE-2018-8292](https://github.com/advisories/GHSA-7jgj-8wvc-jh57) through `System.Net.Http` 4.1.4. |
+
+The ciphertext format is the same on every target framework and compatible with Rijndael256 3.2.0, so data encrypted on one target can be decrypted on any other.
+
 ## Quick Start
 
 ### Encrypt a string using Rijndael AES 256-bit
