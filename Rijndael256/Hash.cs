@@ -64,7 +64,12 @@ namespace Rijndael256
         /// <returns>The hash.</returns>
         internal static byte[] Pbkdf2(byte[] data, byte[] salt, int iterations, int size = 64)
         {
+#if NET8_0_OR_GREATER
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(size);
+            return Rfc2898DeriveBytes.Pbkdf2(data, salt, iterations, HashAlgorithmName.SHA1, size);
+#else
             return (new Rfc2898DeriveBytes(data, salt, iterations)).GetBytes(size);
+#endif
         }
     }
 }

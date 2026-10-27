@@ -28,11 +28,11 @@ namespace Rijndael256.Tests
             var defaultHashIterations = Settings.HashIterations;
             
             Settings.HashIterations = 777;
-            Assert.Equal(Settings.HashIterations, 777);
-            Assert.NotEqual(Settings.HashIterations, defaultHashIterations);
+            Assert.Equal(777, Settings.HashIterations);
+            Assert.NotEqual(defaultHashIterations, Settings.HashIterations);
 
             Settings.Reset();
-            Assert.Equal(Settings.HashIterations, defaultHashIterations);
+            Assert.Equal(defaultHashIterations, Settings.HashIterations);
         }
 
         [Fact]

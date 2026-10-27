@@ -1,7 +1,7 @@
 language: csharp
 mono: none
 sudo: required
-dist: trusty
+dist: jammy
 addons:
   apt:
     packages:
@@ -13,8 +13,12 @@ addons:
     - zlib1g
 install:
   - export DOTNET_INSTALL_DIR="$PWD/.dotnetcli"
-  - curl -sSL https://raw.githubusercontent.com/dotnet/cli/rel/1.0.0/scripts/obtain/dotnet-install.sh | bash /dev/stdin --version latest --install-dir "$DOTNET_INSTALL_DIR"
+  - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --install-dir "$DOTNET_INSTALL_DIR"
+  - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 9.0 --runtime dotnet --install-dir "$DOTNET_INSTALL_DIR"
+  - curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 8.0 --runtime dotnet --install-dir "$DOTNET_INSTALL_DIR"
   - export PATH="$DOTNET_INSTALL_DIR:$PATH"
 script:
   - dotnet restore
-  - dotnet test ./Rijndael256.Tests/Rijndael256.Tests.csproj -c Release -f netcoreapp1.0
+  - dotnet test ./Rijndael256.Tests/Rijndael256.Tests.csproj -c Release -f net8.0
+  - dotnet test ./Rijndael256.Tests/Rijndael256.Tests.csproj -c Release -f net9.0
+  - dotnet test ./Rijndael256.Tests/Rijndael256.Tests.csproj -c Release -f net10.0

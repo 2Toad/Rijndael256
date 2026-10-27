@@ -37,7 +37,7 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes128);
-            Assert.Equal(Convert.ToBase64String(etmCiphertext), EtmProof128);
+            Assert.Equal(EtmProof128, Convert.ToBase64String(etmCiphertext));
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes192);
-            Assert.Equal(Convert.ToBase64String(etmCiphertext), EtmProof192);
+            Assert.Equal(EtmProof192, Convert.ToBase64String(etmCiphertext));
         }
 
         [Fact]
@@ -53,28 +53,28 @@ namespace Rijndael256.Tests
         {
             var plaintext = Encoding.UTF8.GetBytes(Plaintext);
             var etmCiphertext = RijndaelEtM.Encrypt(plaintext, Password, Iv, KeySize.Aes256);
-            Assert.Equal(Convert.ToBase64String(etmCiphertext), EtmProof256);
+            Assert.Equal(EtmProof256, Convert.ToBase64String(etmCiphertext));
         }
 
         [Fact]
         public void Decrypt128()
         {
             var plaintext = RijndaelEtM.Decrypt(EtmProof128, Password, KeySize.Aes128);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
         public void Decrypt192()
         {
             var plaintext = RijndaelEtM.Decrypt(EtmProof192, Password, KeySize.Aes192);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
         public void Decrypt256()
         {
             var plaintext = RijndaelEtM.Decrypt(EtmProof256, Password, KeySize.Aes256);
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace Rijndael256.Tests
             var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes128);
             var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes128);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
 
@@ -95,7 +95,7 @@ namespace Rijndael256.Tests
             var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes192);
             var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes192);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
 
@@ -106,7 +106,7 @@ namespace Rijndael256.Tests
             var etmCiphertext2 = RijndaelEtM.Encrypt(Plaintext, Password, KeySize.Aes256);
             var plaintext = RijndaelEtM.Decrypt(etmCiphertext1, Password, KeySize.Aes256);
 
-            Assert.Equal(plaintext, Plaintext);
+            Assert.Equal(Plaintext, plaintext);
             Assert.NotEqual(etmCiphertext1, etmCiphertext2);
         }
 
@@ -139,7 +139,7 @@ namespace Rijndael256.Tests
         {
             var keyRing = AeKeyRing.Generate(Password);
 
-            Assert.Equal(keyRing.CipherKey, AeKeyRingProof.CipherKey);
+            Assert.Equal(AeKeyRingProof.CipherKey, keyRing.CipherKey);
             Assert.True(keyRing.MacKey.SequenceEqual(AeKeyRingProof.MacKey));
         }
     }
